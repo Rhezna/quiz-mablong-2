@@ -6,15 +6,19 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+// WAJIB: serve public folder
 app.use(express.static("public"));
+
+// WAJIB: route root
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
 
 let players = {};
 let buzzed = null;
 let buzzerOpen = false;
-let history = [];
 
 io.on("connection", (socket) => {
-
   socket.on("join", (name) => {
     players[socket.id] = { name, score: 0 };
     io.emit("updatePlayers", players);
@@ -24,10 +28,7 @@ io.on("connection", (socket) => {
     if (!buzzerOpen || buzzed) return;
 
     buzzed = socket.id;
-    io.emit("buzzResult", {
-      winner: buzzed,
-      players
-    });
+    io.emit("buzzResult", { winner: buzzed });
   });
 
   socket.on("startBuzz", () => {
@@ -35,44 +36,9 @@ io.on("connection", (socket) => {
     buzzerOpen = true;
     io.emit("resetBuzz");
   });
-
-  socket.on("stopBuzz", () => {
-    buzzerOpen = false;
-  });
-
-  socket.on("score", ({ id, value }) => {
-    if (!players[id]) return;
-
-    history.push(JSON.stringify(players));
-
-    players[id].score += value;
-    io.emit("updatePlayers", players);
-
-    io.emit("scoreFlash", { id, value });
-  });
-
-  socket.on("undo", () => {
-    if (history.length > 0) {
-      players = JSON.parse(history.pop());
-      io.emit("updatePlayers", players);
-    }
-  });
-
-  socket.on("resetScore", () => {
-    Object.keys(players).forEach(id => {
-      players[id].score = 0;
-    });
-    io.emit("updatePlayers", players);
-  });
-
-  socket.on("disconnect", () => {
-    delete players[socket.id];
-    io.emit("updatePlayers", players);
-  });
 });
 
 const PORT = process.env.PORT || 3000;
-
 server.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
