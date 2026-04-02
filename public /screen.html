@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Screen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Leaderboard</h1>
+<div id="board"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+
+socket.on("updatePlayers", (players) => {
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+
+  const sorted = Object.values(players)
+    .sort((a,b)=>b.score-a.score);
+
+  sorted.forEach(p => {
+    const div = document.createElement("div");
+    div.innerText = `${p.name} - ${p.score}`;
+    board.appendChild(div);
+  });
+});
+</script>
+
+</body>
+</html>
