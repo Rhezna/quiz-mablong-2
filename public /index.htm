@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Buzzer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login">
+  <h2>Pilih Nama</h2>
+  <select id="name">
+    <option>Pia</option>
+    <option>Nairda</option>
+    <option>Nay</option>
+    <option>Idot</option>
+    <option>Nova</option>
+    <option>Pranu</option>
+    <option>Ivan</option>
+    <option>Rzna</option>
+    <option>Ais</option>
+    <option>Nabin</option>
+  </select>
+  <button onclick="join()">Masuk</button>
+</div>
+
+<div id="buzzer" class="hidden">
+  <h1 id="playerName"></h1>
+  <h2 id="score">0</h2>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+</body>
+</html>
