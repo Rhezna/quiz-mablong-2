@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Host Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>HOST PANEL</h1>
+
+<button onclick="start()">START</button>
+<button onclick="stop()">STOP</button>
+<button onclick="resetScore()">RESET SCORE</button>
+<button onclick="undo()">UNDO</button>
+
+<div id="players"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+
+socket.on("updatePlayers", (players) => {
+  const div = document.getElementById("players");
+  div.innerHTML = "";
+
+  Object.entries(players).forEach(([id, p]) => {
+    const el = document.createElement("div");
+    el.innerHTML = `
+      ${p.name} (${p.score})
+      <button onclick="score('${id}',1)">+1</button>
+      <button onclick="score('${id}',-1)">-1</button>
+    `;
+    div.appendChild(el);
+  });
+});
+
+function start(){ socket.emit("startBuzz"); }
+function stop(){ socket.emit("stopBuzz"); }
+function score(id,v){ socket.emit("score",{id,value:v}); }
+function undo(){ socket.emit("undo"); }
+function resetScore(){ socket.emit("resetScore"); }
+</script>
+
+</body>
+</html>
